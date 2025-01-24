@@ -1,3 +1,5 @@
+import * as THREE from '../three.js-master/build/three.module.js';
+
 class App {
   static #ROTATION_SPEED = 0.001;
 
