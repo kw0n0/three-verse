@@ -40,6 +40,7 @@ class App {
 
     window.addEventListener('resize', (event) => this.resize(event));
     window.addEventListener('keydown', (event) => this.handleKeyDown(event));
+    window.addEventListener('keyup', (event) => this.handleKeyUp(event));
   }
 
   render(time) {
@@ -61,6 +62,12 @@ class App {
 
   handleKeyDown(event) {
     this.#key = event.key;
+  }
+
+  handleKeyUp(event) {
+    if (event.key === this.#key) {
+      this.#key = null;
+    }
   }
 
   #getContainerSize() {
