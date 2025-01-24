@@ -2,6 +2,7 @@ import * as THREE from '../three.js-master/build/three.module.js';
 
 class App {
   static #ROTATION_SPEED = 0.001;
+  static #MOVE_SPEED = 0.05;
 
   CAMERA_POSITION_Z = 5;
   CAMERA_FOV = 70; //카메라 시야각
@@ -12,6 +13,7 @@ class App {
   #scene;
   #camera;
   #mesh;
+  #key;
 
   constructor() {
     const divContainer = document.querySelector('#container');
@@ -37,11 +39,13 @@ class App {
     this.render();
 
     window.addEventListener('resize', (event) => this.resize(event));
+    window.addEventListener('keydown', (event) => this.handleKeyDown(event));
   }
 
   render(time) {
     this.#renderer.render(this.#scene, this.#camera);
     this.#updateRotation(time);
+    this.#updatePosition();
 
     requestAnimationFrame((time) => this.render(time));
   }
@@ -53,6 +57,10 @@ class App {
     this.#camera.updateProjectionMatrix();
 
     this.#renderer.setSize(width, height);
+  }
+
+  handleKeyDown(event) {
+    this.#key = event.key;
   }
 
   #getContainerSize() {
@@ -110,6 +118,32 @@ class App {
   #updateRotation(time) {
     this.#mesh.rotation.x = time * App.#ROTATION_SPEED;
     this.#mesh.rotation.y = time * App.#ROTATION_SPEED;
+  }
+
+  #updatePosition() {
+    switch (this.#key) {
+      case 'w':
+        this.#mesh.position.z -= App.#MOVE_SPEED;
+        break;
+      case 's':
+        this.#mesh.position.z += App.#MOVE_SPEED;
+        break;
+      case 'a':
+        this.#mesh.position.x -= App.#MOVE_SPEED;
+        break;
+      case 'd':
+        this.#mesh.position.x += App.#MOVE_SPEED;
+        break;
+      case 'q':
+        this.#mesh.position.y += App.#MOVE_SPEED;
+        break;
+      case 'e':
+        this.#mesh.position.y -= App.#MOVE_SPEED;
+        break;
+      default:
+        this.#key = null;
+        break;
+    }
   }
 }
 
