@@ -13,7 +13,7 @@ class App {
   #scene;
   #camera;
   #mesh;
-  #key;
+  #keyCode;
 
   constructor() {
     const divContainer = document.querySelector('#container');
@@ -61,12 +61,12 @@ class App {
   }
 
   handleKeyDown(event) {
-    this.#key = event.key;
+    this.#keyCode = event.keyCode;
   }
 
   handleKeyUp(event) {
-    if (event.key === this.#key) {
-      this.#key = null;
+    if (event.keyCode === this.#keyCode) {
+      this.#keyCode = null;
     }
   }
 
@@ -128,27 +128,27 @@ class App {
   }
 
   #updatePosition() {
-    switch (this.#key) {
-      case 'w':
+    switch (this.#keyCode) {
+      case 87:
         this.#mesh.position.z -= App.#MOVE_SPEED;
         break;
-      case 's':
+      case 83:
         this.#mesh.position.z += App.#MOVE_SPEED;
         break;
-      case 'a':
+      case 65:
         this.#mesh.position.x -= App.#MOVE_SPEED;
         break;
-      case 'd':
+      case 68:
         this.#mesh.position.x += App.#MOVE_SPEED;
         break;
-      case 'q':
+      case 81:
         this.#mesh.position.y += App.#MOVE_SPEED;
         break;
-      case 'e':
+      case 69:
         this.#mesh.position.y -= App.#MOVE_SPEED;
         break;
       default:
-        this.#key = null;
+        this.#keyCode = null;
         break;
     }
   }
