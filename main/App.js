@@ -69,7 +69,7 @@ class App {
   }
 
   handleKeyDown(event) {
-    if (this.MOVE_MAP.has(event.keyCode)) {
+    if (this.MOVE_MAP.has(event.keyCode) && !this.#keyCodeMap[event.keyCode]) {
       this.#keyCodeMap[event.keyCode] = true;
     }
   }
