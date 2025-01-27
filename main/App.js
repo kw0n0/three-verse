@@ -144,6 +144,13 @@ class App {
     }
 
     if (pressedCount === 0) return;
+    if (pressedCount > 3) {
+      Object.keys(this.#keyCodeMap).forEach(
+        (key) => (this.#keyCodeMap[key] = false)
+      );
+      alert('4개 이상의 방향키가 눌렸습니다.');
+      return;
+    }
 
     Object.entries(this.#keyCodeMap).forEach(([key, isPressed]) => {
       if (isPressed) {
