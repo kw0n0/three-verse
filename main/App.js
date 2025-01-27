@@ -1,8 +1,15 @@
-import * as THREE from '../three.js-master/build/three.module.js';
+import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r126/three.module.min.js';
 
 class App {
   static #ROTATION_SPEED = 0.001;
   static #MOVE_SPEED = 0.05;
+  static #FONT_CONFIG = {
+    size: 0.5,
+    height: 0.1,
+    bevelEnabled: true,
+    bevelThickness: 0.03,
+    bevelSize: 0.02,
+  };
 
   CAMERA_POSITION_Z = 5;
   CAMERA_FOV = 70; //카메라 시야각
@@ -21,7 +28,9 @@ class App {
   #scene;
   #camera;
   #mesh;
+  #timeMesh;
   #keyCodeMap = new Map();
+  #font;
 
   constructor() {
     const divContainer = document.querySelector('#container');
@@ -43,6 +52,7 @@ class App {
     this.#setupCamera();
     this.#setupLight();
     this.#setupModel();
+    this.#setupTimeModel();
     this.resize();
     this.render();
 
@@ -55,6 +65,7 @@ class App {
     this.#renderer.render(this.#scene, this.#camera);
     this.#updateRotation(time);
     this.#updatePosition();
+    this.#updateTimeDisplay();
 
     requestAnimationFrame((time) => this.render(time));
   }
@@ -108,6 +119,61 @@ class App {
     const light = new THREE.DirectionalLight(COLOR, INTENSITY);
     light.position.set(...POSITION);
     this.#scene.add(light);
+  }
+
+  async #setupTimeModel() {
+    const fontLoader = new THREE.FontLoader();
+
+    const loadFont = (url) => {
+      return new Promise((resolve, reject) => {
+        fontLoader.load(
+          url,
+          (font) => resolve(font),
+          (xhr) =>
+            console.log(parseInt((xhr.loaded / xhr.total) * 100) + '% 로딩됨'),
+          (error) => reject(error)
+        );
+      });
+    };
+
+    this.#font = await loadFont('./helvetiker_regular.typeface.json');
+
+    const defaultGeometry = this.#createTextGeometry('00 : 00 : 00');
+    const material = new THREE.MeshStandardMaterial({ color: 'gold' });
+    this.#timeMesh = new THREE.Mesh(defaultGeometry, material);
+
+    defaultGeometry.computeBoundingBox();
+    const centerOffset =
+      -0.5 *
+      (defaultGeometry.boundingBox.max.x - defaultGeometry.boundingBox.min.x);
+    this.#timeMesh.position.set(centerOffset, 2);
+    this.#scene.add(this.#timeMesh);
+    this.#updateTimeDisplay();
+  }
+
+  #createTextGeometry(text) {
+    return new THREE.TextGeometry(text, {
+      font: this.#font,
+      ...App.#FONT_CONFIG,
+    });
+  }
+
+  #formatCurrentTime() {
+    const now = new Date();
+    return `${String(now.getHours()).padStart(2, '0')} : ${String(
+      now.getMinutes()
+    ).padStart(2, '0')} : ${String(now.getSeconds()).padStart(2, '0')}`;
+  }
+
+  #updateTimeDisplay() {
+    if (!this.#timeMesh) return;
+
+    if (this.#timeMesh.geometry) {
+      this.#timeMesh.geometry.dispose();
+    }
+
+    const curTime = this.#formatCurrentTime();
+    this.#timeMesh.geometry = this.#createTextGeometry(curTime);
   }
 
   #setupModel() {
