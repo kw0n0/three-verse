@@ -7,7 +7,7 @@ class App {
     size: 0.5,
     height: 0.1,
     bevelEnabled: true,
-    bevelThickness: 0.03,
+    bevelThickness: 0.01,
     bevelSize: 0.02,
   };
 
@@ -140,7 +140,17 @@ class App {
 
     const defaultGeometry = this.#createTextGeometry('00 : 00 : 00');
     const material = new THREE.MeshStandardMaterial({ color: 'gold' });
-    this.#timeMesh = new THREE.Mesh(defaultGeometry, material);
+
+    const textMesh = new THREE.Mesh(defaultGeometry, material);
+    const wireframe = new THREE.LineSegments(
+      new THREE.WireframeGeometry(defaultGeometry),
+      new THREE.LineBasicMaterial({ color: 'orange' })
+    );
+
+    const timeGroup = new THREE.Group();
+    timeGroup.add(textMesh);
+    timeGroup.add(wireframe);
+    this.#timeMesh = timeGroup;
 
     defaultGeometry.computeBoundingBox();
     const centerOffset =
@@ -168,12 +178,21 @@ class App {
   #updateTimeDisplay() {
     if (!this.#timeMesh) return;
 
-    if (this.#timeMesh.geometry) {
-      this.#timeMesh.geometry.dispose();
-    }
+    // 기존 지오메트리 제거
+    this.#timeMesh.children.forEach((child) => {
+      if (child.geometry) {
+        child.geometry.dispose();
+      }
+    });
 
     const curTime = this.#formatCurrentTime();
-    this.#timeMesh.geometry = this.#createTextGeometry(curTime);
+    const newGeometry = this.#createTextGeometry(curTime);
+
+    const textMesh = this.#timeMesh.children[0];
+    const wireframe = this.#timeMesh.children[1];
+
+    textMesh.geometry = newGeometry;
+    wireframe.geometry = new THREE.WireframeGeometry(newGeometry);
   }
 
   #setupModel() {
