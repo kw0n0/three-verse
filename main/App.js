@@ -7,13 +7,21 @@ class App {
   CAMERA_POSITION_Z = 5;
   CAMERA_FOV = 70; //카메라 시야각
   CAMERA_DISTANCE = [0.1, 100]; //카메라 최소/최대 거리
+  MOVE_MAP = new Map([
+    [87, ['z', -1]], //w
+    [83, ['z', 1]], //s
+    [65, ['x', -1]], //a
+    [68, ['x', 1]], //d
+    [81, ['y', 1]], //q
+    [69, ['y', -1]], //e
+  ]);
 
   #divContainer;
   #renderer;
   #scene;
   #camera;
   #mesh;
-  #keyCode;
+  #keyCodeMap = new Map();
 
   constructor() {
     const divContainer = document.querySelector('#container');
@@ -61,12 +69,14 @@ class App {
   }
 
   handleKeyDown(event) {
-    this.#keyCode = event.keyCode;
+    if (this.MOVE_MAP.has(event.keyCode)) {
+      this.#keyCodeMap[event.keyCode] = true;
+    }
   }
 
   handleKeyUp(event) {
-    if (event.keyCode === this.#keyCode) {
-      this.#keyCode = null;
+    if (this.MOVE_MAP.has(event.keyCode)) {
+      this.#keyCodeMap[event.keyCode] = false;
     }
   }
 
@@ -128,29 +138,19 @@ class App {
   }
 
   #updatePosition() {
-    switch (this.#keyCode) {
-      case 87:
-        this.#mesh.position.z -= App.#MOVE_SPEED;
-        break;
-      case 83:
-        this.#mesh.position.z += App.#MOVE_SPEED;
-        break;
-      case 65:
-        this.#mesh.position.x -= App.#MOVE_SPEED;
-        break;
-      case 68:
-        this.#mesh.position.x += App.#MOVE_SPEED;
-        break;
-      case 81:
-        this.#mesh.position.y += App.#MOVE_SPEED;
-        break;
-      case 69:
-        this.#mesh.position.y -= App.#MOVE_SPEED;
-        break;
-      default:
-        this.#keyCode = null;
-        break;
+    let pressedCount = 0;
+    for (const isPressed of Object.values(this.#keyCodeMap)) {
+      if (isPressed) pressedCount++;
     }
+
+    if (pressedCount === 0) return;
+
+    Object.entries(this.#keyCodeMap).forEach(([key, isPressed]) => {
+      if (isPressed) {
+        const [axis, direction] = this.MOVE_MAP.get(+key);
+        this.#mesh.position[axis] += App.#MOVE_SPEED * direction;
+      }
+    });
   }
 }
 
