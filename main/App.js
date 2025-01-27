@@ -177,10 +177,11 @@ class App {
   }
 
   #setupModel() {
-    const geometry = new THREE.BoxGeometry(1, 1, 1);
+    const geometry = new THREE.TorusGeometry(0.9, 0.3, 10, 150);
+
     const materials = {
-      fill: new THREE.MeshStandardMaterial({ color: 'red' }),
-      line: new THREE.LineBasicMaterial({ color: 'white' }),
+      fill: new THREE.MeshStandardMaterial({ color: 'gold' }),
+      line: new THREE.LineBasicMaterial({ color: 'orange' }),
     };
 
     const cube = new THREE.Mesh(geometry, materials.fill);
