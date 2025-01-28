@@ -56,13 +56,13 @@ class App {
   }
 
   handleKeyDown(event) {
-    if (this.MOVE_MAP.has(event.keyCode) && !this.#keyCodeMap[event.keyCode]) {
+    if (this.#sceneManager.MOVE_MAP.has(event.keyCode) && !this.#keyCodeMap[event.keyCode]) {
       this.#keyCodeMap[event.keyCode] = true;
     }
   }
 
   handleKeyUp(event) {
-    if (this.MOVE_MAP.has(event.keyCode)) {
+    if (this.#sceneManager.MOVE_MAP.has(event.keyCode)) {
       this.#keyCodeMap[event.keyCode] = false;
     }
   }
