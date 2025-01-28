@@ -1,13 +1,14 @@
 import {
-  TextGeometry,
-  FontLoader,
   Mesh,
   MeshStandardMaterial,
   LineBasicMaterial,
   LineSegments,
   Group,
   WireframeGeometry,
-} from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r126/three.module.min.js';
+  TextGeometry,
+  FontLoader,
+} from 'three';
+
 
 class TimeDisplay {
   static #FONT_CONFIG = {

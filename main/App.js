@@ -1,7 +1,4 @@
-import {
-  WebGLRenderer,
-  Scene,
-} from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r126/three.module.min.js';
+import { WebGLRenderer, Scene } from 'three';
 import TimeDisplay from './TimeDisplay.js';
 import SceneManager from './SceneManager.js';
 import { getContainerSize } from './utils.js';

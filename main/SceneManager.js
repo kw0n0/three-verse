@@ -8,7 +8,7 @@ import {
   Group,
   TorusGeometry,
   WireframeGeometry,
-} from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r126/three.module.min.js';
+} from 'three';
 import { getContainerSize } from './utils.js';
 
 export default class SceneManager {
