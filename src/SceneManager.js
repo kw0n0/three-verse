@@ -66,26 +66,29 @@ export default class SceneManager {
   }
 
   #setupModel() {
-    const geometry = new TorusGeometry(0.9, 0.3, 10, 150);
+    const dracoLoader = new DRACOLoader();
+    dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
 
-    const materials = {
-      fill: new MeshStandardMaterial({ color: 'gold' }),
-      line: new LineBasicMaterial({ color: 'orange' }),
-    };
+    const loader = new GLTFLoader();
+    loader.setDRACOLoader(dracoLoader);
+    
+    loader.load(
+      FERRARI_MODEL_URL, 
+      (gltf) => {
+        this.#scene.add(gltf.scene);
+        this.#mesh = gltf.scene;
+        this.#mesh.rotation.y = 4.7;
+        this.#mesh.position.y = -1;
 
-    const cube = new Mesh(geometry, materials.fill);
-    const wireframe = new LineSegments(
-      new WireframeGeometry(geometry),
-      materials.line
+        const carModel = gltf.scene.children[0];
+      },
+      (xhr) => {
+        console.log(parseInt((xhr.loaded / xhr.total) * 100) + '% 로딩됨');
+      },
+      (error) => {
+        console.error('모델 로딩 중 오류가 발생했습니다:', error);
+      }
     );
-
-    //그룹화로 중복되는 객체별 작업 제거
-    const meshGroup = new Group();
-    meshGroup.add(cube);
-    meshGroup.add(wireframe);
-
-    this.#scene.add(meshGroup);
-    this.#mesh = meshGroup;
   }
 
   updateRotation(time) {
