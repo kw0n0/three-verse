@@ -10,6 +10,10 @@ import {
   WireframeGeometry,
 } from 'three';
 import { getContainerSize } from './utils.js';
+import {  PerspectiveCamera, DirectionalLight } from 'https://unpkg.com/three@0.147.0/build/three.module.js';
+import { GLTFLoader } from 'https://unpkg.com/three@0.147.0/examples/jsm/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'https://unpkg.com/three@0.147.0/examples/jsm/loaders/DRACOLoader.js';
+const FERRARI_MODEL_URL = './assets/ferrari.glb'; 
 
 export default class SceneManager {
   static #ROTATION_SPEED = 0.001;
