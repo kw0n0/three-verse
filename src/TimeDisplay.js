@@ -50,12 +50,12 @@ class TimeDisplay {
 
   #setupTimeModel() {
     const defaultGeometry = this.#createTextGeometry('00 : 00 : 00');
-    const material = new MeshStandardMaterial({ color: 'gold' });
+    const material = new MeshStandardMaterial({ color: 'red' });
 
     const textMesh = new Mesh(defaultGeometry, material);
     const wireframe = new LineSegments(
       new WireframeGeometry(defaultGeometry),
-      new LineBasicMaterial({ color: 'orange' })
+      new LineBasicMaterial({ color: 'tomato' })
     );
 
     const timeGroup = new Group();
