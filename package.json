@@ -1,0 +1,12 @@
+{
+  "name": "three-verse",
+  "version": "1.0.0",
+  "description": "",
+  "dependencies": {},
+  "devDependencies": {},
+  "scripts": {
+    "dev": "npx http-server ./src -p 3000"
+  },
+  "author": "",
+  "license": "ISC"
+}

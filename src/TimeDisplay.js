@@ -36,7 +36,7 @@ class TimeDisplay {
     const fontLoader = new FontLoader();
     return new Promise((resolve, reject) => {
       fontLoader.load(
-        './helvetiker_regular.typeface.json',
+        './assets/fonts/helvetiker_regular.typeface.json',
         (font) => {
           this.#font = font;
           resolve(font);
