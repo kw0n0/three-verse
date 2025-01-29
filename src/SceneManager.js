@@ -92,8 +92,9 @@ export default class SceneManager {
   }
 
   updateRotation(time) {
-    this.#mesh.rotation.x = time * SceneManager.#ROTATION_SPEED;
+    if(this.#mesh) {
     this.#mesh.rotation.y = time * SceneManager.#ROTATION_SPEED;
+    }
   }
 
   updatePosition(keyCodeMap) {
