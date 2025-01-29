@@ -34,6 +34,7 @@ export default class SceneManager {
   #scene;
   #camera;
   #mesh;
+  #wheels = [];
 
   constructor(scene) {
     this.#scene = scene;
@@ -81,6 +82,12 @@ export default class SceneManager {
         this.#mesh.position.y = -1;
 
         const carModel = gltf.scene.children[0];
+        this.#wheels.push(
+          carModel.getObjectByName('wheel_fl'),
+          carModel.getObjectByName('wheel_fr'),
+          carModel.getObjectByName('wheel_rl'),
+          carModel.getObjectByName('wheel_rr')
+        );
       },
       (xhr) => {
         console.log(parseInt((xhr.loaded / xhr.total) * 100) + '% 로딩됨');
@@ -115,6 +122,10 @@ export default class SceneManager {
         const [axis, direction] = this.MOVE_MAP.get(+key);
         this.#mesh.position[axis] += SceneManager.#MOVE_SPEED * direction;
       }
+    });
+
+    this.#wheels.forEach((wheel) => {
+      wheel.rotation.x = -0.005 * time;
     });
   }
 
