@@ -1,14 +1,4 @@
-import {
-  DirectionalLight,
-  PerspectiveCamera,
-  Mesh,
-  MeshStandardMaterial,
-  LineBasicMaterial,
-  LineSegments,
-  Group,
-  TorusGeometry,
-  WireframeGeometry,
-} from 'three';
+
 import { getContainerSize } from './utils.js';
 import {  PerspectiveCamera, DirectionalLight } from 'https://unpkg.com/three@0.147.0/build/three.module.js';
 import { GLTFLoader } from 'https://unpkg.com/three@0.147.0/examples/jsm/loaders/GLTFLoader.js';
@@ -69,7 +59,7 @@ export default class SceneManager {
   #setupModel() {
     const dracoLoader = new DRACOLoader();
     dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
-
+    
     const loader = new GLTFLoader();
     loader.setDRACOLoader(dracoLoader);
     
@@ -78,10 +68,11 @@ export default class SceneManager {
       (gltf) => {
         this.#scene.add(gltf.scene);
         this.#mesh = gltf.scene;
+    
         this.#mesh.rotation.y = 4.7;
         this.#mesh.position.y = -1;
-
         const carModel = gltf.scene.children[0];
+
         this.#wheels.push(
           carModel.getObjectByName('wheel_fl'),
           carModel.getObjectByName('wheel_fr'),
@@ -100,11 +91,11 @@ export default class SceneManager {
 
   updateRotation(time) {
     if(this.#mesh) {
-    this.#mesh.rotation.y = time * SceneManager.#ROTATION_SPEED;
+      this.#mesh.rotation.y = time * SceneManager.#ROTATION_SPEED;
     }
   }
 
-  updatePosition(keyCodeMap) {
+  updatePosition(keyCodeMap, time) {
     let pressedCount = 0;
     for (const isPressed of Object.values(keyCodeMap)) {
       if (isPressed) pressedCount++;
