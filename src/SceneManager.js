@@ -1,6 +1,6 @@
 
 import { getContainerSize } from './utils.js';
-import {  PerspectiveCamera, DirectionalLight } from 'https://unpkg.com/three@0.147.0/build/three.module.js';
+import {  PerspectiveCamera, DirectionalLight, PlaneGeometry, Mesh, MeshBasicMaterial } from 'https://unpkg.com/three@0.147.0/build/three.module.js';
 import { GLTFLoader } from 'https://unpkg.com/three@0.147.0/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'https://unpkg.com/three@0.147.0/examples/jsm/loaders/DRACOLoader.js';
 const FERRARI_MODEL_URL = './assets/ferrari.glb'; 
@@ -57,6 +57,13 @@ export default class SceneManager {
   }
 
   #setupModel() {
+    const planeGeometry = new PlaneGeometry(100, 100);
+    const planeMaterial = new MeshBasicMaterial({ color: 'white' });
+    const plane = new Mesh(planeGeometry, planeMaterial);
+    plane.rotation.x = -Math.PI / 2;
+    plane.position.y = -1;
+    this.#scene.add(plane);
+
     const dracoLoader = new DRACOLoader();
     dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
     
