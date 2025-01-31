@@ -1,24 +1,19 @@
-
 import { getContainerSize } from './utils.js';
-import {  PerspectiveCamera, DirectionalLight, PlaneGeometry, Mesh, MeshBasicMaterial } from 'https://unpkg.com/three@0.147.0/build/three.module.js';
+import {  PerspectiveCamera, DirectionalLight, PlaneGeometry, Mesh, MeshBasicMaterial, Vector3 } from 'https://unpkg.com/three@0.147.0/build/three.module.js';
 import { GLTFLoader } from 'https://unpkg.com/three@0.147.0/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'https://unpkg.com/three@0.147.0/examples/jsm/loaders/DRACOLoader.js';
 const FERRARI_MODEL_URL = './assets/ferrari.glb'; 
 
 export default class SceneManager {
-  static #ROTATION_SPEED = 0.001;
-  static #MOVE_SPEED = 0.05;
 
   CAMERA_POSITION_Z = 5;
   CAMERA_FOV = 70;
   CAMERA_DISTANCE = [0.1, 100];
   MOVE_MAP = new Map([
-    [87, ['z', -1]], //w
-    [83, ['z', 1]], //s
-    [65, ['x', -1]], //a
-    [68, ['x', 1]], //d
-    [81, ['y', 1]], //q
-    [69, ['y', -1]], //e
+    [87, 'forward'], // w
+    [83, 'backward'], // s
+    [65, 'left'], // a
+    [68, 'right'], // d
   ]);
 
   #scene;
@@ -97,24 +92,38 @@ export default class SceneManager {
 
 
   updatePosition(keyCodeMap, time) {
+    const MOVE_SPEED = 0.2;
+    const TURN_SPEED = 0.01;
+
+    if(!this.#mesh) return;
     let pressedCount = 0;
     for (const isPressed of Object.values(keyCodeMap)) {
-      if (isPressed) pressedCount++;
+        if (isPressed) pressedCount++;
     }
 
     if (pressedCount === 0) return;
     if (pressedCount > 3) {
-      Object.keys(keyCodeMap).forEach((key) => (keyCodeMap[key] = false));
-      alert('4개 이상의 방향키가 눌렸습니다.');
-      return;
+        Object.keys(keyCodeMap).forEach((key) => (keyCodeMap[key] = false));
+        alert('4개 이상의 방향키가 눌렸습니다.');
+        return;
     }
 
-    Object.entries(keyCodeMap).forEach(([key, isPressed]) => {
-      if (isPressed) {
-        const [axis, direction] = this.MOVE_MAP.get(+key);
-        this.#mesh.position[axis] += SceneManager.#MOVE_SPEED * direction;
-      }
-    });
+    if (keyCodeMap[65]) this.#mesh.rotation.y += TURN_SPEED;
+    if (keyCodeMap[68]) this.#mesh.rotation.y -= TURN_SPEED;
+
+    const moveVector = new Vector3(0, 0, 0);
+    if (keyCodeMap[87]) moveVector.z -= MOVE_SPEED;
+    if (keyCodeMap[83]) moveVector.z += MOVE_SPEED; 
+    moveVector.applyQuaternion(this.#mesh.quaternion);
+
+    const newPosition = this.#mesh.position.clone().add(moveVector);
+    this.#mesh.position.copy(newPosition);
+
+    const cameraOffset = new Vector3(0, 3, 10);
+    cameraOffset.applyQuaternion(this.#mesh.quaternion);
+    const cameraPosition = this.#mesh.position.clone().add(cameraOffset);
+    this.#camera.position.lerp(cameraPosition, 0.1);
+    this.#camera.lookAt(this.#mesh.position);
 
     this.#wheels.forEach((wheel) => {
       wheel.rotation.x = -0.005 * time;
