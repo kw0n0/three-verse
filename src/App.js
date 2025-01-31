@@ -35,7 +35,6 @@ class App {
 
   render(time) {
     this.#renderer.render(this.#scene, this.#sceneManager.getCamera());
-    this.#sceneManager.updateRotation(time);
     this.#sceneManager.updatePosition(this.#keyCodeMap, time);
     this.#timeDisplay.update();
 

@@ -76,7 +76,6 @@ export default class SceneManager {
         this.#scene.add(gltf.scene);
         this.#mesh = gltf.scene;
     
-        this.#mesh.rotation.y = 4.7;
         this.#mesh.position.y = -1;
         const carModel = gltf.scene.children[0];
 
@@ -96,11 +95,6 @@ export default class SceneManager {
     );
   }
 
-  updateRotation(time) {
-    if(this.#mesh) {
-      this.#mesh.rotation.y = time * SceneManager.#ROTATION_SPEED;
-    }
-  }
 
   updatePosition(keyCodeMap, time) {
     let pressedCount = 0;
