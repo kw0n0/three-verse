@@ -1,19 +1,14 @@
-import { DirectionalLight, PlaneGeometry, Mesh, MeshBasicMaterial } from 'https://unpkg.com/three@0.147.0/build/three.module.js';
+import { DirectionalLight } from 'https://unpkg.com/three@0.147.0/build/three.module.js';
 import CarController from './controllers/CarController.js';
+import BackgroundManager from './managers/BackgroundManager.js';
+
+const LIGHT = {
+  COLOR: 0xffffff,
+  INTENSITY: 1,
+  POSITION: [-1, 2, 4]
+};
 
 export default class SceneManager {
-  static #LIGHT = {
-    COLOR: 0xffffff,
-    INTENSITY: 1,
-    POSITION: [-1, 2, 4]
-  };
-
-  static #PLANE = {
-    SIZE: 100,
-    COLOR: 'white',
-    POSITION_Y: -1
-  };
-
   #scene;
   #cameraController;
   #carController;
@@ -23,28 +18,19 @@ export default class SceneManager {
     this.#cameraController = cameraController;
     this.#setupLight();
     this.#setupModels();
+    new BackgroundManager(this.#scene);
   }
 
   #setupLight() {
     const light = new DirectionalLight(
-      SceneManager.#LIGHT.COLOR, 
-      SceneManager.#LIGHT.INTENSITY
+      LIGHT.COLOR, 
+      LIGHT.INTENSITY
     );
-    light.position.set(...SceneManager.#LIGHT.POSITION);
+    light.position.set(...LIGHT.POSITION);
     this.#scene.add(light);
   }
 
-  #setupPlane() {
-    const planeGeometry = new PlaneGeometry(SceneManager.#PLANE.SIZE, SceneManager.#PLANE.SIZE);
-    const planeMaterial = new MeshBasicMaterial({ color: SceneManager.#PLANE.COLOR });
-    const plane = new Mesh(planeGeometry, planeMaterial);
-    plane.rotation.x = -Math.PI / 2;
-    plane.position.y = SceneManager.#PLANE.POSITION_Y;
-    this.#scene.add(plane);
-  }
-
   async #setupModels() {
-    this.#setupPlane();
     try {
       this.#carController = await CarController.create(this.#scene);
     } catch (error) {
