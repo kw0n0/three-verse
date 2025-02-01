@@ -10,5 +10,4 @@ export const WALL = {
   HEIGHT: 8,
   DEPTH: 40,
   THICKNESS: 2,
-  Y_POSITION: 2
 }; 

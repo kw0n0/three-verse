@@ -9,10 +9,21 @@ import { PLANE, WALL } from '../constants/background.js';
 export default class BackgroundManager {
   #scene;
   #walls = [];
-
   constructor(scene) {
+    if (BackgroundManager.instance) {
+      return BackgroundManager.instance;
+    }
+    BackgroundManager.instance = this;
+    
     this.#scene = scene;
     this.setup();
+  }
+
+  static getInstance() {
+    if (!BackgroundManager.instance) {
+      BackgroundManager.instance = new BackgroundManager();
+    }
+    return BackgroundManager.instance;
   }
 
   setup() {
@@ -45,9 +56,13 @@ export default class BackgroundManager {
 
     wallConfigs.forEach(([geometry, x, z]) => {
       const wall = new Mesh(geometry, wallMaterial);
-      wall.position.set(x, WALL.Y_POSITION, z);
+      wall.position.set(x, 0, z);
       this.#scene.add(wall);
       this.#walls.push(wall);
     });
   }
-} 
+
+  getWalls() {
+    return this.#walls;
+  }
+}

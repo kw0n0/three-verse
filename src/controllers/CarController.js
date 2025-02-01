@@ -1,12 +1,14 @@
 import { GLTFLoader } from 'https://unpkg.com/three@0.147.0/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'https://unpkg.com/three@0.147.0/examples/jsm/loaders/DRACOLoader.js';
-import { Vector3 } from 'https://unpkg.com/three@0.147.0/build/three.module.js';
+import { Vector3, Box3 } from 'https://unpkg.com/three@0.147.0/build/three.module.js';
 import { CAR_SETTINGS, MOVE_MAP } from '../constants/carConstants.js';
+import BackgroundManager from '../managers/BackgroundManager.js';
 
 export default class CarController {
   #mesh;
   #wheels = [];
   #keyCodeMap = new Map();
+  #carSize;
 
   static async create(scene) {
     const dracoLoader = new DRACOLoader();
@@ -36,6 +38,12 @@ export default class CarController {
   constructor(mesh) {
     this.#mesh = mesh;
     this.#initializeWheels();
+
+    const carBox = new Box3().setFromObject(this.#mesh);
+    this.#carSize = {
+      width: carBox.max.x - carBox.min.x,
+      length: carBox.max.z - carBox.min.z
+    };
 
     window.addEventListener('keydown', (event) => {
       this.handleKeyDown(event);
@@ -99,9 +107,33 @@ export default class CarController {
     return moveVector;
   }
 
+  checkCollision(newPosition) {
+    if (!this.#mesh) return false;
+
+    for (const wall of BackgroundManager.getInstance().getWalls()) {
+      const wallPosition = wall.position;
+      const wallSize = {
+        width: wall.geometry.parameters.width,
+        length: wall.geometry.parameters.depth
+      };
+
+      if (
+        newPosition.x - this.#carSize.width/2 < wallPosition.x + wallSize.width/2 &&
+        newPosition.x + this.#carSize.width/2 > wallPosition.x - wallSize.width/2 &&
+        newPosition.z - this.#carSize.length/2 < wallPosition.z + wallSize.length/2 &&
+        newPosition.z + this.#carSize.length/2 > wallPosition.z - wallSize.length/2
+      ) {
+        return true; 
+      }
+    }
+    return false; 
+  }
+
   updatePosition(moveVector) {
     const newPosition = this.#mesh.position.clone().add(moveVector);
-    this.#mesh.position.copy(newPosition);
+    if (!this.checkCollision(newPosition)) {
+      this.#mesh.position.copy(newPosition);
+    }
   }
 
   updateWheels(time) {
