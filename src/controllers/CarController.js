@@ -3,12 +3,14 @@ import { DRACOLoader } from 'https://unpkg.com/three@0.147.0/examples/jsm/loader
 import { Vector3, Box3 } from 'https://unpkg.com/three@0.147.0/build/three.module.js';
 import { CAR_SETTINGS, MOVE_MAP } from '../constants/carConstants.js';
 import BackgroundManager from '../managers/BackgroundManager.js';
+import ColorPickerManager from '../managers/ColorPickerManager.js';
 
 export default class CarController {
   #mesh;
   #wheels = [];
   #keyCodeMap = new Map();
   #carSize;
+  #carMaterial;
 
   static async create(scene) {
     const dracoLoader = new DRACOLoader();
@@ -38,6 +40,8 @@ export default class CarController {
   constructor(mesh) {
     this.#mesh = mesh;
     this.#initializeWheels();
+    this.#initializeCarMaterial();
+    new ColorPickerManager(this);
 
     const carBox = new Box3().setFromObject(this.#mesh);
     this.#carSize = {
@@ -74,6 +78,19 @@ export default class CarController {
       carModel.getObjectByName('wheel_rl'),
       carModel.getObjectByName('wheel_rr')
     );
+  }
+
+  #initializeCarMaterial() {
+    const carBody = this.#mesh.children[0].getObjectByName('body');
+    if (carBody && carBody.material) {
+        this.#carMaterial = carBody.material;
+    }
+  }
+
+  changeColor(color) {
+    if (this.#carMaterial) {
+        this.#carMaterial.color.set(color);
+    }
   }
 
   validateKeyInput() {

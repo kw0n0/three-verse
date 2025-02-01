@@ -14,3 +14,19 @@ body {
   left: 0;
   position: absolute;
 }
+
+.color-picker {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 10px;
+  border-radius: 8px;
+  display: flex;
+  gap: 10px;
+  z-index: 1000;
+  
+  > input {
+    cursor: pointer;
+  }
+}
