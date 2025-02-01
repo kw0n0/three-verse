@@ -2,6 +2,7 @@ import { WebGLRenderer, Scene } from 'three';
 import TimeDisplay from './TimeDisplay.js';
 import SceneManager from './SceneManager.js';
 import { getContainerSize } from './utils.js';
+import CameraController from './controllers/CameraController.js';
 
 class App {
   #renderer;
