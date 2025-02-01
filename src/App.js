@@ -6,9 +6,9 @@ import { getContainerSize } from './utils.js';
 class App {
   #renderer;
   #scene;
-  #keyCodeMap = new Map();
   #timeDisplay;
   #sceneManager;
+  #cameraController;
 
   constructor() {
     const divContainer = document.querySelector('#container');
@@ -21,7 +21,8 @@ class App {
     const scene = new Scene();
     this.#scene = scene;
 
-    this.#sceneManager = new SceneManager(scene);
+    this.#cameraController = new CameraController(getContainerSize());
+    this.#sceneManager = new SceneManager(scene, this.#cameraController);
     this.#timeDisplay = new TimeDisplay(scene);
     this.#timeDisplay.initialize();
 
@@ -29,38 +30,24 @@ class App {
     this.render();
 
     window.addEventListener('resize', (event) => this.resize(event));
-    window.addEventListener('keydown', (event) => this.handleKeyDown(event));
-    window.addEventListener('keyup', (event) => this.handleKeyUp(event));
-  }
-
-  render(time) {
-    this.#renderer.render(this.#scene, this.#sceneManager.getCamera());
-    this.#sceneManager.updatePosition(this.#keyCodeMap, time);
-    this.#timeDisplay.update();
-
-    requestAnimationFrame((time) => this.render(time));
   }
 
   resize() {
     const { width, height } = getContainerSize();
-    const camera = this.#sceneManager.getCamera();
-
+    const camera = this.#cameraController.getCamera();
+    
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
 
     this.#renderer.setSize(width, height);
   }
 
-  handleKeyDown(event) {
-    if (this.#sceneManager.MOVE_MAP.has(event.keyCode) && !this.#keyCodeMap[event.keyCode]) {
-      this.#keyCodeMap[event.keyCode] = true;
-    }
-  }
+  render(time) {
+    this.#renderer.render(this.#scene, this.#cameraController.getCamera());
+    this.#sceneManager.updatePosition(time);
+    this.#timeDisplay.update();
 
-  handleKeyUp(event) {
-    if (this.#sceneManager.MOVE_MAP.has(event.keyCode)) {
-      this.#keyCodeMap[event.keyCode] = false;
-    }
+    requestAnimationFrame((time) => this.render(time));
   }
 }
 
