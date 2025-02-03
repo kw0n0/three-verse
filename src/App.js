@@ -10,6 +10,8 @@ class App {
   #timeDisplay;
   #sceneManager;
   #cameraController;
+  boundRender;
+  boundResize;
 
   constructor() {
     const divContainer = document.querySelector('#container');
@@ -27,10 +29,13 @@ class App {
     this.#timeDisplay = new TimeDisplay(scene);
     this.#timeDisplay.initialize();
 
+    this.boundRender = (event) => this.render(event);
+    this.boundResize = () => this.resize();
+
     this.resize();
     this.render();
 
-    window.addEventListener('resize', (event) => this.resize(event));
+    window.addEventListener('resize', this.boundResize);
   }
 
   resize() {
@@ -48,7 +53,25 @@ class App {
     this.#sceneManager.updatePosition(time);
     this.#timeDisplay.update();
 
-    requestAnimationFrame((time) => this.render(time));
+    requestAnimationFrame(this.boundRender);
+  }
+
+  dispose() {
+    window.removeEventListener('resize', this.boundResize);
+    
+    this.#renderer.dispose();
+    this.#scene.traverse(object => {
+      if (object.geometry) {
+        object.geometry.dispose();
+      }
+      if (object.material) {
+        if (Array.isArray(object.material)) {
+          object.material.forEach(material => material.dispose());
+        } else {
+          object.material.dispose();
+        }
+      }
+    });
   }
 }
 
