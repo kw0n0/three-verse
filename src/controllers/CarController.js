@@ -11,6 +11,8 @@ export default class CarController {
   #keyCodeMap = new Map();
   #carSize;
   #carMaterial;
+  keydownListener;
+  keyupListener;
 
   static async create(scene) {
     const dracoLoader = new DRACOLoader();
@@ -49,13 +51,11 @@ export default class CarController {
       length: carBox.max.z - carBox.min.z
     };
 
-    window.addEventListener('keydown', (event) => {
-      this.handleKeyDown(event);
-    });
-
-    window.addEventListener('keyup', (event) => {
-      this.handleKeyUp(event);
-    });
+    this.keydownListener = (event) => this.handleKeyDown(event);
+    this.keyupListener = (event) => this.handleKeyUp(event);
+    
+    window.addEventListener('keydown', this.keydownListener);
+    window.addEventListener('keyup', this.keyupListener);
   }
 
   handleKeyDown(event) {
@@ -173,5 +173,10 @@ export default class CarController {
 
   getMesh() {
     return this.#mesh;
+  }
+
+  dispose() {
+    window.removeEventListener('keydown', this.keydownListener);
+    window.removeEventListener('keyup', this.keyupListener);
   }
 } 
