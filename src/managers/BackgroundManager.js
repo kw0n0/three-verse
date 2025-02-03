@@ -7,6 +7,7 @@ import {
 import { PLANE, WALL } from '../constants/background.js';
 
 export default class BackgroundManager {
+  static instance = null;
   #scene;
   #walls = [];
   constructor(scene) {
@@ -14,9 +15,8 @@ export default class BackgroundManager {
       return BackgroundManager.instance;
     }
     BackgroundManager.instance = this;
-    
     this.#scene = scene;
-    this.setup();
+    this.#initialize();
   }
 
   static getInstance() {
@@ -26,15 +26,16 @@ export default class BackgroundManager {
     return BackgroundManager.instance;
   }
 
-  setup() {
+  #initialize() {
     this.#setupPlane();
     this.#setupWalls();
   }
 
   #setupPlane() {
-    const planeGeometry = new PlaneGeometry(PLANE.SIZE, PLANE.SIZE);
-    const planeMaterial = new MeshBasicMaterial({ color: PLANE.COLOR });
-    const plane = new Mesh(planeGeometry, planeMaterial);
+    const plane = new Mesh(
+      new PlaneGeometry(PLANE.SIZE, PLANE.SIZE),
+      new MeshBasicMaterial({ color: PLANE.COLOR })
+    );
     plane.rotation.x = -Math.PI / 2;
     plane.position.y = PLANE.POSITION_Y;
     this.#scene.add(plane);
