@@ -1,5 +1,8 @@
-📜 렌더링 최적화 히스토리
----
+
+
+<details>
+<summary>&nbsp<b>텍스트 메쉬 렌더링 최적화 히스토리 📜</b> </summary>
+    
 ### 📍 렌더링 최적화 단계
 
 #### 최적화 적용 전
@@ -36,3 +39,16 @@
 ### 📍 피드백
 코드를 작성할 때 엣지 케이스를 고려한 테스트와 개발에 집중하는 습관을 기르는 것이 중요하다고 느꼈습니다.<br>
 이러한 습관이 불필요하게 단계별 최적화를 시도하는 과정을 줄이고, 자연스럽게 좋은 코드를 작성할 수 있도록 도와줄 것이라고 생각합니다.
+</details>
+
+<details>
+<summary> &nbsp<b>자동차 주행제어 및 충돌처리 구현영상 🚗</b> </summary>
+
+#### 방향키를 활용한 자동차 주행제어
+https://github.com/user-attachments/assets/0785e7d8-093b-4881-b09f-ca787f484cd4
+
+#### Blender 내 모든 객체들에 대한 충돌 처리
+https://github.com/user-attachments/assets/8f0e1c77-c14f-4fe1-84f3-028d220eef2c
+</details>    
+
+
