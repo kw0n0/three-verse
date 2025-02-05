@@ -134,7 +134,7 @@ export default class CarController {
   checkCollision(newPosition) {
     if (!this.#mesh) return false;
 
-    for (const wall of BackgroundManager.getInstance().getWalls()) {
+    for (const wall of BackgroundManager.getInstance().get('walls')) {
       const wallPosition = wall.position;
       const wallSize = {
         width: wall.geometry.parameters.width,

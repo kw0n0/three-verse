@@ -17,14 +17,21 @@ export default class SceneManager {
     this.#scene = scene;
     this.#cameraController = cameraController;
     this.#setupLight();
+    this.#setupBackground();
     this.#setupModels();
-    new BackgroundManager(this.#scene);
   }
 
   #setupLight() {
     const light = new DirectionalLight(LIGHT.COLOR, LIGHT.INTENSITY);
     light.position.set(...LIGHT.POSITION);
     this.#scene.add(light);
+  }
+
+  #setupBackground() {
+    const background = BackgroundManager.getInstance().get();
+    Object.values(background).forEach((obj) => {
+      this.#scene.add(obj);
+    });
   }
 
   async #setupModels() {

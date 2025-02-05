@@ -7,23 +7,38 @@ import {
 import { PLANE, WALL } from '../constants/background.js';
 
 export default class BackgroundManager {
-  static instance = null;
-  #scene;
+  static #instance = null;
   #walls = [];
-  constructor(scene) {
-    if (BackgroundManager.instance) {
-      return BackgroundManager.instance;
+  #plane = null;
+
+  constructor() {
+    if (BackgroundManager.#instance) {
+      return BackgroundManager.#instance;
     }
-    BackgroundManager.instance = this;
-    this.#scene = scene;
+
+    BackgroundManager.#instance = this;
     this.#initialize();
   }
 
   static getInstance() {
-    if (!BackgroundManager.instance) {
-      BackgroundManager.instance = new BackgroundManager();
+    if (!BackgroundManager.#instance) {
+      BackgroundManager.#instance = new BackgroundManager();
     }
-    return BackgroundManager.instance;
+    return BackgroundManager.#instance;
+  }
+
+  get(type) {
+    switch (type) {
+      case 'plane':
+        return this.#plane;
+      case 'walls':
+        return this.#walls;
+      default:
+        return {
+          plane: this.#plane,
+          walls: this.#walls,
+        };
+    }
   }
 
   #initialize() {
@@ -38,7 +53,14 @@ export default class BackgroundManager {
     );
     plane.rotation.x = -Math.PI / 2;
     plane.position.y = PLANE.POSITION_Y;
-    this.#scene.add(plane);
+    this.#plane = plane;
+  }
+
+  #createWall(width, height, depth, x, z) {
+    return {
+      geometry: new BoxGeometry(width, height, depth),
+      position: { x, y: WALL.HEIGHT / 2, z },
+    };
   }
 
   #setupWalls() {
@@ -49,21 +71,17 @@ export default class BackgroundManager {
     });
 
     const wallConfigs = [
-      [new BoxGeometry(WALL.THICKNESS, WALL.HEIGHT, WALL.DEPTH), -20, 0],
-      [new BoxGeometry(WALL.THICKNESS, WALL.HEIGHT, WALL.DEPTH), 20, 0],
-      [new BoxGeometry(WALL.DEPTH, WALL.HEIGHT, WALL.THICKNESS), 0, -20],
-      [new BoxGeometry(WALL.DEPTH, WALL.HEIGHT, WALL.THICKNESS), 0, 20],
+      this.#createWall(WALL.THICKNESS, WALL.HEIGHT, WALL.DEPTH, -20, 0),
+      this.#createWall(WALL.THICKNESS, WALL.HEIGHT, WALL.DEPTH, 20, 0),
+      this.#createWall(WALL.DEPTH, WALL.HEIGHT, WALL.THICKNESS, 0, -20),
+      this.#createWall(WALL.DEPTH, WALL.HEIGHT, WALL.THICKNESS, 0, 20),
     ];
 
-    wallConfigs.forEach(([geometry, x, z]) => {
+    this.#walls = wallConfigs.map(({ geometry, position }) => {
       const wall = new Mesh(geometry, wallMaterial);
-      wall.position.set(x, 0, z);
-      this.#scene.add(wall);
-      this.#walls.push(wall);
-    });
-  }
+      wall.position.set(position.x, position.y, position.z);
 
-  getWalls() {
-    return this.#walls;
+      return wall;
+    });
   }
 }
