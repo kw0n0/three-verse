@@ -5,33 +5,46 @@ import {
 import { CAMERA_SETTINGS } from '../constants/cameraConstants.js';
 
 export default class CameraController {
+  static #instance = null;
   #camera;
 
-  constructor(width, height) {
-    this.#setupCamera(width, height);
-  }
-
-  #setupCamera(width, height) {
+  constructor() {
+    if (CameraController.#instance) {
+      return CameraController.#instance;
+    }
     this.#camera = new PerspectiveCamera(
       CAMERA_SETTINGS.FOV,
-      width / height,
+      CAMERA_SETTINGS.WIDTH / CAMERA_SETTINGS.HEIGHT,
       ...CAMERA_SETTINGS.DISTANCE
     );
     this.#camera.position.z = CAMERA_SETTINGS.POSITION_Z;
+    CameraController.#instance = this;
+  }
+
+  static getInstance() {
+    if (!CameraController.#instance) {
+      CameraController.#instance = new CameraController();
+    }
+    return CameraController.#instance;
+  }
+
+  #calculateCameraOffset(targetMesh) {
+    const cameraOffset = new Vector3(
+      CAMERA_SETTINGS.OFFSET.X,
+      CAMERA_SETTINGS.OFFSET.Y,
+      CAMERA_SETTINGS.OFFSET.Z
+    );
+    cameraOffset.applyQuaternion(targetMesh.quaternion);
+    return cameraOffset;
   }
 
   update(targetController) {
     if (!targetController) return;
 
     const targetMesh = targetController.getMesh();
-    const cameraOffset = new Vector3(
-      CAMERA_SETTINGS.OFFSET.X,
-      CAMERA_SETTINGS.OFFSET.Y,
-      CAMERA_SETTINGS.OFFSET.Z
-    );
-
-    cameraOffset.applyQuaternion(targetMesh.quaternion);
+    const cameraOffset = this.#calculateCameraOffset(targetMesh);
     const cameraPosition = targetMesh.position.clone().add(cameraOffset);
+
     this.#camera.position.lerp(cameraPosition, 0.1);
     this.#camera.lookAt(targetMesh.position);
   }
