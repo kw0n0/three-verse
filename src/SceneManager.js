@@ -30,7 +30,11 @@ export default class SceneManager {
   #setupBackground() {
     const background = BackgroundManager.getInstance().get();
     Object.values(background).forEach((obj) => {
-      this.#scene.add(obj);
+      if (Array.isArray(obj)) {
+        obj.forEach((item) => this.#scene.add(item));
+      } else {
+        this.#scene.add(obj);
+      }
     });
   }
 
