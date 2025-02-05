@@ -1,9 +1,12 @@
-import { PerspectiveCamera, Vector3 } from 'https://unpkg.com/three@0.147.0/build/three.module.js';
+import {
+  PerspectiveCamera,
+  Vector3,
+} from 'https://unpkg.com/three@0.147.0/build/three.module.js';
 import { CAMERA_SETTINGS } from '../constants/cameraConstants.js';
 
 export default class CameraController {
   #camera;
-  
+
   constructor(width, height) {
     this.#setupCamera(width, height);
   }
@@ -19,14 +22,14 @@ export default class CameraController {
 
   update(targetController) {
     if (!targetController) return;
-    
+
     const targetMesh = targetController.getMesh();
     const cameraOffset = new Vector3(
       CAMERA_SETTINGS.OFFSET.X,
       CAMERA_SETTINGS.OFFSET.Y,
       CAMERA_SETTINGS.OFFSET.Z
     );
-    
+
     cameraOffset.applyQuaternion(targetMesh.quaternion);
     const cameraPosition = targetMesh.position.clone().add(cameraOffset);
     this.#camera.position.lerp(cameraPosition, 0.1);
@@ -36,4 +39,4 @@ export default class CameraController {
   getCamera() {
     return this.#camera;
   }
-} 
+}
