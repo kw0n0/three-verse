@@ -9,7 +9,6 @@ import {
   FontLoader,
 } from 'three';
 
-
 class TimeDisplay {
   static #FONT_CONFIG = {
     size: 0.5,

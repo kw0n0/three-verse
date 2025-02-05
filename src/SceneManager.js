@@ -5,7 +5,7 @@ import BackgroundManager from './managers/BackgroundManager.js';
 const LIGHT = {
   COLOR: 0xffffff,
   INTENSITY: 1,
-  POSITION: [-1, 2, 4]
+  POSITION: [-1, 2, 4],
 };
 
 export default class SceneManager {
@@ -22,10 +22,7 @@ export default class SceneManager {
   }
 
   #setupLight() {
-    const light = new DirectionalLight(
-      LIGHT.COLOR, 
-      LIGHT.INTENSITY
-    );
+    const light = new DirectionalLight(LIGHT.COLOR, LIGHT.INTENSITY);
     light.position.set(...LIGHT.POSITION);
     this.#scene.add(light);
   }
@@ -40,8 +37,8 @@ export default class SceneManager {
   }
 
   updatePosition(time) {
-    if(!this.#carController) return;
-    
+    if (!this.#carController) return;
+
     this.#carController.update(time);
     this.#cameraController.update(this.#carController);
   }

@@ -41,7 +41,7 @@ class App {
   resize() {
     const { width, height } = getContainerSize();
     const camera = this.#cameraController.getCamera();
-    
+
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
 
@@ -58,15 +58,15 @@ class App {
 
   dispose() {
     window.removeEventListener('resize', this.boundResize);
-    
+
     this.#renderer.dispose();
-    this.#scene.traverse(object => {
+    this.#scene.traverse((object) => {
       if (object.geometry) {
         object.geometry.dispose();
       }
       if (object.material) {
         if (Array.isArray(object.material)) {
-          object.material.forEach(material => material.dispose());
+          object.material.forEach((material) => material.dispose());
         } else {
           object.material.dispose();
         }

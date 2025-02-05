@@ -1,6 +1,9 @@
 import { GLTFLoader } from 'https://unpkg.com/three@0.147.0/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'https://unpkg.com/three@0.147.0/examples/jsm/loaders/DRACOLoader.js';
-import { Vector3, Box3 } from 'https://unpkg.com/three@0.147.0/build/three.module.js';
+import {
+  Vector3,
+  Box3,
+} from 'https://unpkg.com/three@0.147.0/build/three.module.js';
 import { CAR_SETTINGS, MOVE_MAP } from '../constants/carConstants.js';
 import BackgroundManager from '../managers/BackgroundManager.js';
 import ColorPickerManager from '../managers/ColorPickerManager.js';
@@ -16,11 +19,13 @@ export default class CarController {
 
   static async create(scene) {
     const dracoLoader = new DRACOLoader();
-    dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
-    
+    dracoLoader.setDecoderPath(
+      'https://www.gstatic.com/draco/versioned/decoders/1.5.6/'
+    );
+
     const loader = new GLTFLoader();
     loader.setDRACOLoader(dracoLoader);
-    
+
     return new Promise((resolve, reject) => {
       loader.load(
         CAR_SETTINGS.MODEL_URL,
@@ -48,12 +53,12 @@ export default class CarController {
     const carBox = new Box3().setFromObject(this.#mesh);
     this.#carSize = {
       width: carBox.max.x - carBox.min.x,
-      length: carBox.max.z - carBox.min.z
+      length: carBox.max.z - carBox.min.z,
     };
 
     this.keydownListener = (event) => this.handleKeyDown(event);
     this.keyupListener = (event) => this.handleKeyUp(event);
-    
+
     window.addEventListener('keydown', this.keydownListener);
     window.addEventListener('keyup', this.keyupListener);
   }
@@ -83,22 +88,24 @@ export default class CarController {
   #initializeCarMaterial() {
     const carBody = this.#mesh.children[0].getObjectByName('body');
     if (carBody && carBody.material) {
-        this.#carMaterial = carBody.material;
+      this.#carMaterial = carBody.material;
     }
   }
 
   changeColor(color) {
     if (this.#carMaterial) {
-        this.#carMaterial.color.set(color);
+      this.#carMaterial.color.set(color);
     }
   }
 
   validateKeyInput() {
     const pressedCount = Object.values(this.#keyCodeMap).filter(Boolean).length;
-    
+
     if (pressedCount === 0) return false;
     if (pressedCount > CAR_SETTINGS.KEY_LIMIT) {
-      Object.keys(this.#keyCodeMap).forEach((key) => (this.#keyCodeMap[key] = false));
+      Object.keys(this.#keyCodeMap).forEach(
+        (key) => (this.#keyCodeMap[key] = false)
+      );
       alert('4개 이상의 방향키가 눌렸습니다.');
       return false;
     }
@@ -106,18 +113,18 @@ export default class CarController {
   }
 
   updateRotation() {
-    if (this.#keyCodeMap[CAR_SETTINGS.CONTROLS.LEFT]) 
+    if (this.#keyCodeMap[CAR_SETTINGS.CONTROLS.LEFT])
       this.#mesh.rotation.y += CAR_SETTINGS.TURN_SPEED;
-    if (this.#keyCodeMap[CAR_SETTINGS.CONTROLS.RIGHT]) 
+    if (this.#keyCodeMap[CAR_SETTINGS.CONTROLS.RIGHT])
       this.#mesh.rotation.y -= CAR_SETTINGS.TURN_SPEED;
   }
 
   calculateMovement() {
     const moveVector = new Vector3(0, 0, 0);
 
-    if (this.#keyCodeMap[CAR_SETTINGS.CONTROLS.FORWARD]) 
+    if (this.#keyCodeMap[CAR_SETTINGS.CONTROLS.FORWARD])
       moveVector.z -= CAR_SETTINGS.MOVE_SPEED;
-    if (this.#keyCodeMap[CAR_SETTINGS.CONTROLS.BACKWARD]) 
+    if (this.#keyCodeMap[CAR_SETTINGS.CONTROLS.BACKWARD])
       moveVector.z += CAR_SETTINGS.MOVE_SPEED;
 
     moveVector.applyQuaternion(this.#mesh.quaternion);
@@ -131,19 +138,23 @@ export default class CarController {
       const wallPosition = wall.position;
       const wallSize = {
         width: wall.geometry.parameters.width,
-        length: wall.geometry.parameters.depth
+        length: wall.geometry.parameters.depth,
       };
 
       if (
-        newPosition.x - this.#carSize.width/2 < wallPosition.x + wallSize.width/2 &&
-        newPosition.x + this.#carSize.width/2 > wallPosition.x - wallSize.width/2 &&
-        newPosition.z - this.#carSize.length/2 < wallPosition.z + wallSize.length/2 &&
-        newPosition.z + this.#carSize.length/2 > wallPosition.z - wallSize.length/2
+        newPosition.x - this.#carSize.width / 2 <
+          wallPosition.x + wallSize.width / 2 &&
+        newPosition.x + this.#carSize.width / 2 >
+          wallPosition.x - wallSize.width / 2 &&
+        newPosition.z - this.#carSize.length / 2 <
+          wallPosition.z + wallSize.length / 2 &&
+        newPosition.z + this.#carSize.length / 2 >
+          wallPosition.z - wallSize.length / 2
       ) {
-        return true; 
+        return true;
       }
     }
-    return false; 
+    return false;
   }
 
   updatePosition(moveVector) {
@@ -162,10 +173,13 @@ export default class CarController {
   update(time) {
     if (!this.validateKeyInput()) return;
 
-    if (this.#keyCodeMap[CAR_SETTINGS.CONTROLS.LEFT] || this.#keyCodeMap[CAR_SETTINGS.CONTROLS.RIGHT]) {
+    if (
+      this.#keyCodeMap[CAR_SETTINGS.CONTROLS.LEFT] ||
+      this.#keyCodeMap[CAR_SETTINGS.CONTROLS.RIGHT]
+    ) {
       this.updateRotation();
     }
-    
+
     const moveVector = this.calculateMovement();
     this.updatePosition(moveVector);
     this.updateWheels(time);
@@ -179,4 +193,4 @@ export default class CarController {
     window.removeEventListener('keydown', this.keydownListener);
     window.removeEventListener('keyup', this.keyupListener);
   }
-} 
+}

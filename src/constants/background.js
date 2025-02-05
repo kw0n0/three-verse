@@ -1,7 +1,7 @@
 export const PLANE = {
-  SIZE: 100, 
+  SIZE: 100,
   COLOR: 'white',
-  POSITION_Y: -1
+  POSITION_Y: -1,
 };
 
 export const WALL = {
@@ -10,4 +10,4 @@ export const WALL = {
   HEIGHT: 8,
   DEPTH: 40,
   THICKNESS: 2,
-}; 
+};

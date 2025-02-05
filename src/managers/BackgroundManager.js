@@ -1,8 +1,8 @@
-import { 
-  PlaneGeometry, 
+import {
+  PlaneGeometry,
   BoxGeometry,
-  Mesh, 
-  MeshBasicMaterial 
+  Mesh,
+  MeshBasicMaterial,
 } from 'https://unpkg.com/three@0.147.0/build/three.module.js';
 import { PLANE, WALL } from '../constants/background.js';
 
@@ -42,17 +42,17 @@ export default class BackgroundManager {
   }
 
   #setupWalls() {
-    const wallMaterial = new MeshBasicMaterial({ 
+    const wallMaterial = new MeshBasicMaterial({
       color: WALL.COLOR,
       transparent: true,
-      opacity: WALL.OPACITY
+      opacity: WALL.OPACITY,
     });
 
     const wallConfigs = [
       [new BoxGeometry(WALL.THICKNESS, WALL.HEIGHT, WALL.DEPTH), -20, 0],
-      [new BoxGeometry(WALL.THICKNESS, WALL.HEIGHT, WALL.DEPTH), 20, 0],   
-      [new BoxGeometry(WALL.DEPTH, WALL.HEIGHT, WALL.THICKNESS), 0, -20],  
-      [new BoxGeometry(WALL.DEPTH, WALL.HEIGHT, WALL.THICKNESS), 0, 20]    
+      [new BoxGeometry(WALL.THICKNESS, WALL.HEIGHT, WALL.DEPTH), 20, 0],
+      [new BoxGeometry(WALL.DEPTH, WALL.HEIGHT, WALL.THICKNESS), 0, -20],
+      [new BoxGeometry(WALL.DEPTH, WALL.HEIGHT, WALL.THICKNESS), 0, 20],
     ];
 
     wallConfigs.forEach(([geometry, x, z]) => {

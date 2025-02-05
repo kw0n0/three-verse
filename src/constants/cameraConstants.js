@@ -5,6 +5,6 @@ export const CAMERA_SETTINGS = {
   OFFSET: {
     X: 0,
     Y: 3,
-    Z: 10
-  }
-}; 
+    Z: 10,
+  },
+};

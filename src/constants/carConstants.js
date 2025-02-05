@@ -9,7 +9,7 @@ export const CAR_SETTINGS = {
     BACKWARD: 83, // s
     LEFT: 65, // a
     RIGHT: 68, // d
-  }
+  },
 };
 
 export const MOVE_MAP = new Map([
@@ -17,4 +17,4 @@ export const MOVE_MAP = new Map([
   [CAR_SETTINGS.CONTROLS.BACKWARD, 'backward'],
   [CAR_SETTINGS.CONTROLS.LEFT, 'left'],
   [CAR_SETTINGS.CONTROLS.RIGHT, 'right'],
-]); 
+]);
