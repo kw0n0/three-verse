@@ -27,7 +27,7 @@ export default class BackgroundManager {
     return BackgroundManager.#instance;
   }
 
-  get(type) {
+  getElement(type) {
     switch (type) {
       case 'plane':
         return this.#plane;

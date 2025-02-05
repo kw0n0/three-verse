@@ -9,15 +9,37 @@ import BackgroundManager from '../managers/BackgroundManager.js';
 import ColorPickerManager from '../managers/ColorPickerManager.js';
 
 export default class CarController {
-  #mesh;
+  #car;
   #wheels = [];
   #keyCodeMap = new Map();
   #carSize;
   #carMaterial;
+
   keydownListener;
   keyupListener;
 
-  static async create(scene) {
+  constructor() {
+    this.#wheels = [];
+    this.#keyCodeMap = new Map();
+  }
+
+  async initialize() {
+    try {
+      this.#car = await this.#loadModel();
+      this.#initializeWheels();
+      this.#initializeCarMaterial();
+      this.#initializeKeyboardControls();
+      this.#calculateCarSize();
+      new ColorPickerManager(this);
+
+      return this;
+    } catch (error) {
+      console.error('CarController 초기화 중 오류 발생:', error);
+      throw error;
+    }
+  }
+
+  async #loadModel() {
     const dracoLoader = new DRACOLoader();
     dracoLoader.setDecoderPath(
       'https://www.gstatic.com/draco/versioned/decoders/1.5.6/'
@@ -30,8 +52,7 @@ export default class CarController {
       loader.load(
         CAR_SETTINGS.MODEL_URL,
         (gltf) => {
-          scene.add(gltf.scene);
-          resolve(new CarController(gltf.scene));
+          resolve(gltf.scene);
         },
         (xhr) => {
           console.log(parseInt((xhr.loaded / xhr.total) * 100) + '% 로딩됨');
@@ -44,18 +65,24 @@ export default class CarController {
     });
   }
 
-  constructor(mesh) {
-    this.#mesh = mesh;
-    this.#initializeWheels();
-    this.#initializeCarMaterial();
-    new ColorPickerManager(this);
+  #initializeWheels() {
+    const carModel = this.#car.children[0];
+    this.#wheels.push(
+      carModel.getObjectByName('wheel_fl'),
+      carModel.getObjectByName('wheel_fr'),
+      carModel.getObjectByName('wheel_rl'),
+      carModel.getObjectByName('wheel_rr')
+    );
+  }
 
-    const carBox = new Box3().setFromObject(this.#mesh);
-    this.#carSize = {
-      width: carBox.max.x - carBox.min.x,
-      length: carBox.max.z - carBox.min.z,
-    };
+  #initializeCarMaterial() {
+    const carBody = this.#car.children[0].getObjectByName('body');
+    if (carBody && carBody.material) {
+      this.#carMaterial = carBody.material;
+    }
+  }
 
+  #initializeKeyboardControls() {
     this.keydownListener = (event) => this.handleKeyDown(event);
     this.keyupListener = (event) => this.handleKeyUp(event);
 
@@ -75,21 +102,12 @@ export default class CarController {
     }
   }
 
-  #initializeWheels() {
-    const carModel = this.#mesh.children[0];
-    this.#wheels.push(
-      carModel.getObjectByName('wheel_fl'),
-      carModel.getObjectByName('wheel_fr'),
-      carModel.getObjectByName('wheel_rl'),
-      carModel.getObjectByName('wheel_rr')
-    );
-  }
-
-  #initializeCarMaterial() {
-    const carBody = this.#mesh.children[0].getObjectByName('body');
-    if (carBody && carBody.material) {
-      this.#carMaterial = carBody.material;
-    }
+  #calculateCarSize() {
+    const carBox = new Box3().setFromObject(this.#car);
+    this.#carSize = {
+      width: carBox.max.x - carBox.min.x,
+      length: carBox.max.z - carBox.min.z,
+    };
   }
 
   changeColor(color) {
@@ -114,9 +132,9 @@ export default class CarController {
 
   updateRotation() {
     if (this.#keyCodeMap[CAR_SETTINGS.CONTROLS.LEFT])
-      this.#mesh.rotation.y += CAR_SETTINGS.TURN_SPEED;
+      this.#car.rotation.y += CAR_SETTINGS.TURN_SPEED;
     if (this.#keyCodeMap[CAR_SETTINGS.CONTROLS.RIGHT])
-      this.#mesh.rotation.y -= CAR_SETTINGS.TURN_SPEED;
+      this.#car.rotation.y -= CAR_SETTINGS.TURN_SPEED;
   }
 
   calculateMovement() {
@@ -127,14 +145,14 @@ export default class CarController {
     if (this.#keyCodeMap[CAR_SETTINGS.CONTROLS.BACKWARD])
       moveVector.z += CAR_SETTINGS.MOVE_SPEED;
 
-    moveVector.applyQuaternion(this.#mesh.quaternion);
+    moveVector.applyQuaternion(this.#car.quaternion);
     return moveVector;
   }
 
   checkCollision(newPosition) {
-    if (!this.#mesh) return false;
+    if (!this.#car) return false;
 
-    for (const wall of BackgroundManager.getInstance().get('walls')) {
+    for (const wall of BackgroundManager.getInstance().getElement('walls')) {
       const wallPosition = wall.position;
       const wallSize = {
         width: wall.geometry.parameters.width,
@@ -158,9 +176,9 @@ export default class CarController {
   }
 
   updatePosition(moveVector) {
-    const newPosition = this.#mesh.position.clone().add(moveVector);
+    const newPosition = this.#car.position.clone().add(moveVector);
     if (!this.checkCollision(newPosition)) {
-      this.#mesh.position.copy(newPosition);
+      this.#car.position.copy(newPosition);
     }
   }
 
@@ -185,8 +203,8 @@ export default class CarController {
     this.updateWheels(time);
   }
 
-  getMesh() {
-    return this.#mesh;
+  getElement() {
+    return this.#car;
   }
 
   dispose() {

@@ -38,15 +38,15 @@ export default class CameraController {
     return cameraOffset;
   }
 
-  update(targetController) {
-    if (!targetController) return;
+  update(carController) {
+    if (!carController) return;
 
-    const targetMesh = targetController.getMesh();
-    const cameraOffset = this.#calculateCameraOffset(targetMesh);
-    const cameraPosition = targetMesh.position.clone().add(cameraOffset);
+    const car = carController.getElement();
+    const cameraOffset = this.#calculateCameraOffset(car);
+    const cameraPosition = car.position.clone().add(cameraOffset);
 
     this.#camera.position.lerp(cameraPosition, 0.1);
-    this.#camera.lookAt(targetMesh.position);
+    this.#camera.lookAt(car.position);
   }
 
   getCamera() {

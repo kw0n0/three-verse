@@ -28,7 +28,7 @@ export default class SceneManager {
   }
 
   #setupBackground() {
-    const background = BackgroundManager.getInstance().get();
+    const background = BackgroundManager.getInstance().getElement();
     Object.values(background).forEach((obj) => {
       if (Array.isArray(obj)) {
         obj.forEach((item) => this.#scene.add(item));
@@ -39,12 +39,9 @@ export default class SceneManager {
   }
 
   async #setupModels() {
-    try {
-      this.#carController = await CarController.create(this.#scene);
-    } catch (error) {
-      alert('자동차 모델 로딩 실패!');
-      console.error('자동차 모델 로딩 실패:', error);
-    }
+    //FIXME: 에러처리 보류
+    this.#carController = await new CarController().initialize();
+    this.#scene.add(this.#carController.getElement());
   }
 
   updatePosition(time) {
